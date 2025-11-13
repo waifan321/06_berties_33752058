@@ -23,7 +23,6 @@ const db = mysql.createPool({
 });
 global.db = db;
 
-
 // Set up the body parser 
 app.use(express.urlencoded({ extended: true }))
 
