@@ -7,10 +7,32 @@ router.get('/search',function(req, res, next){
     res.render("search.ejs")
 });
 
-// Handle search results (example placeholder).
-// In a fuller implementation this would query the DB for matching books.
+// Handle search results.
+// Basic behaviour: exact match on the `name` column (default).
+// Advanced behaviour: if `advanced=1` is provided in the query string,
+//                  perform a partial match using SQL LIKE.
 router.get('/search-result', function (req, res, next) {
-    res.send("You searched for: " + req.query.keyword)
+    const term = req.query.search_text;
+    if (!term) {
+        // No search term provided - render an empty results page
+        return res.render('search_result.ejs', { availableBooks: [], term: '' })
+    }
+
+    let sqlquery, params;
+    if (req.query.advanced === '1') {
+        // advanced partial search
+        sqlquery = 'SELECT * FROM books WHERE name LIKE ?'
+        params = ['%' + term + '%']
+    } else {
+        // basic exact search
+        sqlquery = 'SELECT * FROM books WHERE name = ?'
+        params = [term]
+    }
+
+    db.query(sqlquery, params, (err, result) => {
+        if (err) return next(err)
+        res.render('search_result.ejs', { availableBooks: result, term: term })
+    })
 });
 
 // Show a list of all available books from the database
@@ -25,6 +47,15 @@ router.get('/list', function(req, res, next) {
         // render the `list.ejs` template with the result rows
         res.render("list.ejs", {availableBooks:result})
     });
+});
+
+// Bargain books: list books priced less than £20
+router.get('/bargainbooks', function(req, res, next) {
+    const sql = 'SELECT * FROM books WHERE price < 20'
+    db.query(sql, (err, result) => {
+        if (err) return next(err)
+        res.render('list.ejs', { availableBooks: result })
+    })
 });
 
 // Display form to add a new book

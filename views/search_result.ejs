@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- views/search_result.ejs - Search results page
+     Variables:
+       - availableBooks: array of book rows
+       - term: the search term submitted
+-->
+<html>
+  <head>
+    <title>Search results - <%= shopData.shopName %></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <style>
+      table.books-list { border-collapse: collapse; width: 80%; max-width: 800px; }
+      table.books-list th, table.books-list td { border: 1px solid #ddd; padding: 8px; }
+      table.books-list th { background: #f7f7f7; text-align: left; }
+      .price { text-align: right; }
+    </style>
+  </head>
+  <body>
+    <h1>Search results for "<%= term %>"</h1>
+
+    <% if (availableBooks && availableBooks.length) { %>
+      <table class="books-list">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th class="price">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% availableBooks.forEach(function(book){ %>
+            <tr>
+              <td><%= book.name %></td>
+              <td class="price">£<%= (typeof book.price === 'number') ? book.price.toFixed(2) : book.price %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>No books matched your search.</p>
+    <% } %>
+
+    <p><a href="/books/search">New search</a> | <a href="/books/list">View all books</a> | <a href="/">Home</a></p>
+  </body>
+</html>
