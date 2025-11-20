@@ -4,10 +4,12 @@ var express = require ('express')
 var ejs = require('ejs')
 var mysql = require('mysql2');
 const path = require('path')
+// Load environment variables from .env (if present)
+require('dotenv').config()
 
 // Create the express application object
 const app = express()
-const port = 8000
+const port = process.env.PORT || 8000
 
 // Tell Express that we want to use EJS as the templating engine
 app.set('view engine', 'ejs')
@@ -15,12 +17,12 @@ app.set('view engine', 'ejs')
 // Define the database connection pool using mysql2's connection pooling.
 // The pool allows the app to reuse connections and handle concurrent requests.
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'berties_books_app',
-    password: 'qwertyuiop',
-    database: 'berties_books',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'berties_books_app',
+    password: process.env.DB_PASSWORD || 'qwertyuiop',
+    database: process.env.DB_NAME || 'berties_books',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: parseInt(process.env.DB_CONN_LIMIT) || 10,
     queueLimit: 0,
 });
 // Expose the pool as a global so route modules can access it via `db`.

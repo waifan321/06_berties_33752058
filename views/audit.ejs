@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- views/audit.ejs - Audit log of login attempts -->
+<html>
+  <head>
+    <title>Audit Log - <%= shopData.shopName %></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <style>
+      table.audit { border-collapse: collapse; width: 100%; max-width: 1000px }
+      table.audit th, table.audit td { border: 1px solid #ddd; padding: 6px }
+      table.audit th { background: #f7f7f7 }
+    </style>
+  </head>
+  <body>
+    <h1>Audit Log for <%= shopData.shopName %></h1>
+
+    <% if (audits && audits.length) { %>
+      <table class="audit">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Username</th>
+            <th>Success</th>
+            <th>IP</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% audits.forEach(function(a){ %>
+            <tr>
+              <td><%= a.event_time %></td>
+              <td><%= a.username %></td>
+              <td><%= a.success ? 'Yes' : 'No' %></td>
+              <td><%= a.ip_address %></td>
+              <td><%= a.message %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>No audit records available.</p>
+    <% } %>
+
+    <p><a href="/">Home</a> | <a href="/users/list">Users</a> | <a href="/users/register">Register</a></p>
+  </body>
+</html>

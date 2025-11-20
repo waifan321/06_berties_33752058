@@ -51,6 +51,16 @@ node index.js
 
 Visit `http://localhost:8000` in your browser.
 
+## dotenv
+
+To avoid hard-coding database credentials in source code the project uses the `dotenv` module. Steps to use it:
+
+- Copy `.env.example` to `.env` and edit values (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `PORT`).
+- The app loads environment variables from `.env` at startup; `index.js` uses these to configure the MySQL pool.
+- Do NOT commit your `.env` file to version control — keep it out of public repositories.
+
+This keeps secrets out of the repo and allows different credentials on the VM or production.
+
 ## Routes
 
 - `/` — Home page (`views/index.ejs`)
@@ -60,6 +70,16 @@ Visit `http://localhost:8000` in your browser.
 - `POST /books/bookadded` — Inserts a book and shows confirmation (`views/bookadded.ejs`)
 - `/books/search` — Search form (`views/search.ejs`) (placeholder)
 - `/users/register` — Register form (`views/register.ejs`)
+
+## Audit
+
+The application records login attempts (successful and failed) in an `audit` table so administrators can review authentication activity. Implementation details:
+
+- `create_db.sql` includes a `CREATE TABLE audit (...)` statement to store `username`, `success` (0/1), `event_time`, `ip_address`, and a `message`.
+- Login attempts are recorded by the `/users/loggedin` route (successful and failed attempts both inserted into `audit`).
+- The audit history is viewable at `/users/audit` (renders `views/audit.ejs`).
+
+To create the table and user, run the SQL in `create_db.sql` on your MySQL server (or import the file using your client).
 
 ## Notes and tips
 
