@@ -1,6 +1,7 @@
 // Main route module: handles top-level pages like home and about
 const express = require("express")
 const router = express.Router()
+const request = require('request')
 
 // Middleware to require a logged-in session
 const redirectLogin = (req, res, next) => {
@@ -28,6 +29,41 @@ router.get('/logout', redirectLogin, (req,res) => {
                 res.send('you are now logged out. <a href='+'./'+'>Home</a>');
                 })
         })
+
+
+// Weather route - shows a form and, when a city is provided via ?city=, calls OpenWeatherMap
+router.get('/weather', function(req, res, next) {
+                // Allow city to be supplied via query (?city=...) or default to London
+                let apiKey = '8a802be693241533936a7ae1c167ea51'
+                let city = req.query.city || 'london'
+                let url = `http://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`
+                     
+                request(url, function (err, response, body) {
+                    if(err){
+                        next(err)
+                    } else {
+                        var weather = JSON.parse(body)
+                        if (weather!==undefined && weather.main!==undefined) {
+                        var wmsg = 'It is '+ weather.main.temp + 
+                                ' degrees in '+ weather.name +
+                                '! <br> The humidity now is: ' + 
+                                weather.main.humidity +
+                                '<br> Feels like: ' + weather.main.feels_like +
+                                '<br> Min temp: ' + weather.main.temp_min +
+                                '<br> Max temp: ' + weather.main.temp_max +
+                                '<br> Wind speed: ' + weather.wind.speed;
+                        // Simple form + result so the route is interactive while keeping original output logic
+                        var html = '<form method="GET" action="/weather">' +
+                                             'City: <input type="text" name="city" value="'+ (city) + '" />' +
+                                             '<input type="submit" value="Get weather" />' +
+                                             '</form><hr>' + wmsg
+                        res.send (html);
+                        } else {
+                            res.send('Error, please try again')
+                        }
+                    } 
+                });
+})
 
 
 // POST handler used to insert a new book record into the database.

@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Weather - <%= shopData.shopName %></title>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1>Weather for <%= shopData.shopName %></h1>
+
+    <form method="GET" action="/weather">
+      <div class="weather-form">
+        <label for="city">City:</label>
+        <input id="city" type="text" name="city" value="<%= city %>" />
+        <input type="submit" value="Get weather" />
+      </div>
+    </form>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p style="color:darkred"><%= error %></p>
+    <% } %>
+
+    <% if (weather) { %>
+      <div class="weather-card">
+        <div class="weather-top">
+          <% if (weather.weather && weather.weather[0]) { %>
+            <img src="http://openweathermap.org/img/wn/<%= weather.weather[0].icon %>@2x.png" alt="icon" />
+          <% } %>
+          <div>
+            <div class="weather-temp"><%= weather.main.temp %> &deg;C</div>
+            <div class="weather-desc"><%= weather.weather && weather.weather[0] ? weather.weather[0].description : '' %></div>
+            <div class="weather-meta">Current in <strong><%= weather.name %></strong></div>
+          </div>
+        </div>
+
+        <div class="weather-grid">
+          <div class="weather-item">
+            <div class="weather-label">Feels like</div>
+            <div class="weather-value"><%= weather.main.feels_like %> &deg;C</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">Humidity</div>
+            <div class="weather-value"><%= weather.main.humidity %> %</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">Pressure</div>
+            <div class="weather-value"><%= weather.main.pressure %> hPa</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">Cloudiness</div>
+            <div class="weather-value"><%= weather.clouds && weather.clouds.all ? weather.clouds.all + '%' : 'N/A' %></div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">Wind</div>
+            <div class="weather-value"><%= weather.wind && weather.wind.speed ? weather.wind.speed + ' m/s' : 'N/A' %> <% if (weather.wind && weather.wind.deg) { %> (<%= weather.wind.deg %>&deg;) <% } %></div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">Temp range</div>
+            <div class="weather-value"><%= weather.main.temp_min %> - <%= weather.main.temp_max %> &deg;C</div>
+          </div>
+        </div>
+
+        <% if (weather.sys && weather.sys.sunrise && weather.sys.sunset) { %>
+          <div style="margin-top:12px;color:#444">Sunrise: <%= new Date(weather.sys.sunrise * 1000).toLocaleTimeString() %> &nbsp;|&nbsp; Sunset: <%= new Date(weather.sys.sunset * 1000).toLocaleTimeString() %></div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <p><a href="/">Home</a></p>
+  </body>
+</html>

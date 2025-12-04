@@ -71,6 +71,26 @@ This keeps secrets out of the repo and allows different credentials on the VM or
 - `/books/search` — Search form (`views/search.ejs`) (placeholder)
 - `/users/register` — Register form (`views/register.ejs`)
 
+## API
+
+The application exposes a small JSON API for books at `/api/books`.
+
+- `GET /api/books` — returns all books as JSON.
+- Optional query parameters:
+	- `search`: substring to match in book name (case-insensitive). Example: `/api/books?search=world`.
+	- `minprice` and `maxprice` (or `max_price`): numeric range filter for price. Example: `/api/books?minprice=5&max_price=10`.
+	- `sort`: either `name` or `price` to sort results. Example: `/api/books?sort=price`.
+
+Examples:
+```
+GET /api/books
+GET /api/books?search=universe
+GET /api/books?minprice=5&max_price=10&sort=price
+```
+
+The API returns HTTP 500 with a JSON error object if a database error occurs.
+
+
 ## Audit
 
 The application records login attempts (successful and failed) in an `audit` table so administrators can review authentication activity. Implementation details:
